@@ -4,9 +4,28 @@ from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import ChatMessageHistory
 
-st.title("Chat with llama3.1")
+# Create in-memory chat history
+demo_ephemeral_chat_history = ChatMessageHistory()
 
-chat = OllamaLLM(model="llama3.1")
+# Add a sidebar for Ollama model selection
+with st.sidebar:
+    model = st.selectbox(
+        "Select a model",
+        ("llama3.1", "llama3", "gemma2", "mistral", "mixtral"),
+    )
+
+    st.markdown("## Notes:")
+    note_text = """
+You can use the model selection sidebar to select the model you want to use
+Remember to run 'ollama run <model>' to start the model.
+"""
+
+    st.markdown(note_text)
+
+st.title(f'Chat with local Ollma model: {model}')
+
+# Create Ollama LLM
+chat = OllamaLLM(model=model)
 
 # Create a simple chat prompt
 chat_prompt = ChatPromptTemplate.from_messages(
@@ -21,9 +40,6 @@ chat_prompt = ChatPromptTemplate.from_messages(
 
 # Create a prompt and llm chain
 chain = chat_prompt | chat
-
-# Create in-memory chat history
-demo_ephemeral_chat_history = ChatMessageHistory()
 
 # Initialize session state
 if "messages" not in st.session_state:
